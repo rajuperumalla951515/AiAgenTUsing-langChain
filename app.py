@@ -4,7 +4,7 @@ import streamlit as st
 import certifi
 from dotenv import load_dotenv
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.tools import tool
 from langchain.agents import (
     create_react_agent,
@@ -20,7 +20,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 os.environ["SSL_CERT_FILE"] = certifi.where()
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 WEATHERSTACK_API_KEY = os.getenv("WEATHERSTACK_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
@@ -78,10 +78,10 @@ def get_weather_data(city: str) -> str:
 # LLM
 # ==========================================
 
-llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
+llm = ChatGoogleGenerativeAI(
+    model="gemini-3.6-flash",
     temperature=0,
-    api_key=OPENAI_API_KEY
+    google_api_key=GOOGLE_API_KEY
 )
 
 # ==========================================
@@ -121,36 +121,54 @@ agent_executor = AgentExecutor(
 )
 
 # ==========================================
-# UI INPUT
+# CHAT INTERFACE
 # ==========================================
 
-user_query = st.text_input(
-    "Enter your query:",
-    placeholder="Example: Find the capital of India and current weather"
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+with st.sidebar:
+    st.header("Conversation")
+    if st.button("Clear chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+user_query = st.chat_input(
+    "Ask about the weather, news, or anything you want to research"
 )
 
-# ==========================================
-# RUN AGENT
-# ==========================================
+if user_query:
+    st.session_state.messages.append({"role": "user", "content": user_query})
+    with st.chat_message("user"):
+        st.markdown(user_query)
 
-if st.button("Run Agent"):
+    conversation = "\n".join(
+        f"{message['role'].title()}: {message['content']}"
+        for message in st.session_state.messages[:-1]
+    )
+    agent_input = (
+        f"Previous conversation:\n{conversation}\n\n"
+        f"Current user question: {user_query}"
+        if conversation
+        else user_query
+    )
 
-    if user_query:
-
+    with st.chat_message("assistant"):
         with st.spinner("Agent is thinking..."):
-
             try:
-                response = agent_executor.invoke({
-                    "input": user_query
-                })
-
-                st.success("Response Generated")
-
-                st.markdown("## Final Response")
-                st.write(response["output"])
-
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
-
-    else:
-        st.warning("Please enter a query")
+                response = agent_executor.invoke({"input": agent_input})
+                answer = response["output"]
+                st.markdown(answer)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": answer}
+                )
+            except Exception as error:
+                answer = f"Error: {error}"
+                st.error(answer)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": answer}
+                )
