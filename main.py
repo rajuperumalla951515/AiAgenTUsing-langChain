@@ -29,6 +29,20 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 WEATHERSTACK_API_KEY = os.getenv("WEATHERSTACK_API_KEY")
 
+missing_keys = [
+    name
+    for name, value in {
+        "GOOGLE_API_KEY": GOOGLE_API_KEY,
+        "TAVILY_API_KEY": TAVILY_API_KEY,
+        "WEATHERSTACK_API_KEY": WEATHERSTACK_API_KEY,
+    }.items()
+    if not value
+]
+if missing_keys:
+    raise RuntimeError(
+        "Missing required environment variables: " + ", ".join(missing_keys)
+    )
+
 # ==========================================
 # SEARCH TOOL
 # ==========================================
@@ -50,7 +64,8 @@ def get_weather_data(city: str) -> str:
         f"access_key={WEATHERSTACK_API_KEY}&query={city}"
     )
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=15)
+    response.raise_for_status()
 
     data = response.json()
 
@@ -69,7 +84,7 @@ def get_weather_data(city: str) -> str:
 # ==========================================
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash",
+    model="gemini-2.5-flash",
     temperature=0,
     google_api_key=GOOGLE_API_KEY
 )
@@ -115,7 +130,7 @@ agent_executor = AgentExecutor(
 
 response = agent_executor.invoke({
     "input": (
-        "Find the capital of India"
+        "Find the capital of India "
         "and then find its current weather."
     )
 })

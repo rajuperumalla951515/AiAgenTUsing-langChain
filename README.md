@@ -52,12 +52,26 @@ pip install -r requirements.txt
 Create a `.env` file at the repository root and add your API keys:
 
 ```dotenv
-OPENAI_API_KEY="your-openai-api-key"
+GOOGLE_API_KEY="your-google-api-key"
 TAVILY_API_KEY="your-tavily-api-key"
 WEATHERSTACK_API_KEY="your-weatherstack-api-key"
 ```
 
 > Do not commit your `.env` file or secret keys to source control.
+
+### Streamlit Community Cloud
+
+1. Create a new app and select `app.py` as the main file.
+2. In **Advanced settings**, select **Python 3.11** or **Python 3.12**. Do not select Python 3.14: the pinned legacy LangChain dependencies are not compatible with it.
+3. In the app settings, open **Secrets** and add the three variables above as TOML:
+
+```toml
+GOOGLE_API_KEY = "your-google-api-key"
+TAVILY_API_KEY = "your-tavily-api-key"
+WEATHERSTACK_API_KEY = "your-weatherstack-api-key"
+```
+
+4. Deploy. The hosted app cannot use your local `.env` file, because `.env` is intentionally ignored by Git.
 
 ### Run the Project
 
