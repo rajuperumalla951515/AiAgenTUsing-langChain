@@ -70,7 +70,7 @@ def save_response(query: str, response: str) -> None:
         "query": query,
         "query_key": query_key,
         "response": response,
-        "model": "gemini-2.5-flash",
+        "model": "gemini-3.6-flash",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     try:
@@ -405,7 +405,7 @@ def get_weather_data(city: str) -> str:
 def get_agent_executor():
     """Build the agent once instead of rebuilding it on every chat rerun."""
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
+        model="gemini-3.6-flash",
         temperature=0,
         google_api_key=GOOGLE_API_KEY,
         max_retries=2,
