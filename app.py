@@ -1,4 +1,8 @@
 import os
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
 import requests
 import streamlit as st
 import certifi
@@ -27,6 +31,55 @@ def get_secret(name: str) -> str | None:
 GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 WEATHERSTACK_API_KEY = get_secret("WEATHERSTACK_API_KEY")
 TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
+
+RESPONSE_DATASET = Path(__file__).parent / "data" / "agent_responses.jsonl"
+
+
+def normalize_query(query: str) -> str:
+    return " ".join(query.casefold().split())
+
+
+def get_saved_response(query: str) -> str | None:
+    query_key = normalize_query(query)
+    response_cache = st.session_state.setdefault("response_cache", {})
+    if query_key in response_cache:
+        return response_cache[query_key]
+
+    if not RESPONSE_DATASET.exists():
+        return None
+
+    try:
+        records = RESPONSE_DATASET.read_text(encoding="utf-8").splitlines()
+        for record_text in reversed(records):
+            if not record_text.strip():
+                continue
+            record = json.loads(record_text)
+            if record.get("query_key") == query_key:
+                response_cache[query_key] = record["response"]
+                return record["response"]
+    except (OSError, json.JSONDecodeError, KeyError):
+        return None
+
+    return None
+
+
+def save_response(query: str, response: str) -> None:
+    query_key = normalize_query(query)
+    st.session_state.setdefault("response_cache", {})[query_key] = response
+    record = {
+        "query": query,
+        "query_key": query_key,
+        "response": response,
+        "model": "gemini-2.5-flash",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        RESPONSE_DATASET.parent.mkdir(parents=True, exist_ok=True)
+        with RESPONSE_DATASET.open("a", encoding="utf-8") as dataset_file:
+            dataset_file.write(json.dumps(record, ensure_ascii=True) + "\n")
+    except OSError:
+        # The response remains available in session memory if the host is read-only.
+        pass
 
 # ==========================================
 # STREAMLIT PAGE CONFIG
@@ -428,17 +481,21 @@ if user_query:
     )
 
     with st.chat_message("assistant"):
-        with st.spinner("Agent is thinking..."):
-            try:
-                response = agent_executor.invoke({"input": agent_input})
-                answer = response["output"]
+            saved_answer = get_saved_response(user_query)
+            if saved_answer is not None:
+                answer = saved_answer
+                st.caption("Saved response")
                 st.markdown(answer)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": answer}
-                )
-            except Exception as error:
-                answer = f"Error: {error}"
-                st.error(answer)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": answer}
-                )
+            else:
+                with st.spinner("Researching..."):
+                    try:
+                        response = agent_executor.invoke({"input": agent_input})
+                        answer = response["output"]
+                        save_response(user_query, answer)
+                        st.markdown(answer)
+                    except Exception as error:
+                        answer = f"Error: {error}"
+                        st.error(answer)
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer}
+            )
