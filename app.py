@@ -311,32 +311,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <div class="main-head">
-        <div>◈ &nbsp; SIGNAL / AI</div>
-        <div class="status-pill"><span class="status-dot"></span>Online</div>
-    </div>
-    <div class="workspace">
-        <div class="welcome">
-            <div class="welcome-orb"></div>
-            <h1>Ready to create something new?</h1>
-        </div>
-        <div class="quick-actions">
-            <span class="quick-action">Create image&nbsp; ◫</span>
-            <span class="quick-action">Brainstorm&nbsp; ◇</span>
-            <span class="quick-action">Make a plan&nbsp; ▱</span>
-        </div>
-        <div class="feature-grid">
-            <div class="feature-card"><strong>Web research</strong><span>Current answers with sources</span></div>
-            <div class="feature-card"><strong>Weather data</strong><span>Live conditions by city</span></div>
-            <div class="feature-card"><strong>AI assistant</strong><span>Fast, focused responses</span></div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
 # ==========================================
 # SEARCH TOOL
 # ==========================================
