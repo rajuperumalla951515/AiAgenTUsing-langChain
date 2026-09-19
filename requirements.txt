@@ -7,4 +7,5 @@ requests==2.31.0
 tavily-python
 python-dotenv
 langchainhub
+supabase>=2.0.0,<3.0.0
 streamlit>=1.53.0

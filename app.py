@@ -9,6 +9,7 @@ import requests
 import streamlit as st
 import certifi
 from dotenv import load_dotenv
+from supabase import Client, create_client
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.tools import tool
@@ -33,6 +34,8 @@ def get_secret(name: str) -> str | None:
 GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 WEATHERSTACK_API_KEY = get_secret("WEATHERSTACK_API_KEY")
 TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
+SUPABASE_URL = get_secret("SUPABASE_URL")
+SUPABASE_SECRET_KEY = get_secret("SUPABASE_SECRET_KEY")
 
 RESPONSE_DATASET = Path(__file__).parent / "data" / "agent_responses.csv"
 
@@ -41,11 +44,39 @@ def normalize_query(query: str) -> str:
     return " ".join(query.casefold().split())
 
 
+@st.cache_resource(show_spinner=False)
+def get_supabase_client() -> Client | None:
+    if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
+        return None
+    try:
+        return create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)
+    except Exception:
+        return None
+
+
 def get_saved_response(query: str) -> str | None:
     query_key = normalize_query(query)
     response_cache = st.session_state.setdefault("response_cache", {})
     if query_key in response_cache:
         return response_cache[query_key]
+
+    supabase = get_supabase_client()
+    if supabase:
+        try:
+            result = (
+                supabase.table("agent_responses")
+                .select("response")
+                .eq("query_key", query_key)
+                .order("created_at", desc=True)
+                .limit(1)
+                .execute()
+            )
+            if result.data:
+                response = result.data[0]["response"]
+                response_cache[query_key] = response
+                return response
+        except Exception:
+            pass
 
     if not RESPONSE_DATASET.exists():
         return None
@@ -73,6 +104,14 @@ def save_response(query: str, response: str) -> None:
         "model": "gemini-3.6-flash",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
+
+    supabase = get_supabase_client()
+    if supabase:
+        try:
+            supabase.table("agent_responses").insert(record).execute()
+        except Exception:
+            pass
+
     try:
         RESPONSE_DATASET.parent.mkdir(parents=True, exist_ok=True)
         file_exists = RESPONSE_DATASET.exists()

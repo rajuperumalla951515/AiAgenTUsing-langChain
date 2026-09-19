@@ -55,6 +55,8 @@ Create a `.env` file at the repository root and add your API keys:
 GOOGLE_API_KEY="your-google-api-key"
 TAVILY_API_KEY="your-tavily-api-key"
 WEATHERSTACK_API_KEY="your-weatherstack-api-key"
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SECRET_KEY="your-supabase-secret-key"
 ```
 
 > Do not commit your `.env` file or secret keys to source control.
@@ -69,9 +71,12 @@ WEATHERSTACK_API_KEY="your-weatherstack-api-key"
 GOOGLE_API_KEY = "your-google-api-key"
 TAVILY_API_KEY = "your-tavily-api-key"
 WEATHERSTACK_API_KEY = "your-weatherstack-api-key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_SECRET_KEY = "your-supabase-secret-key"
 ```
 
-4. Deploy. The hosted app cannot use your local `.env` file, because `.env` is intentionally ignored by Git.
+4. In Supabase SQL Editor, run [`supabase_schema.sql`](supabase_schema.sql) once to create the response table.
+5. Deploy. The hosted app cannot use your local `.env` file, because `.env` is intentionally ignored by Git.
 
 ### Run the Project
 

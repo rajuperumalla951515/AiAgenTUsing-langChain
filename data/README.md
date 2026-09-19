@@ -6,4 +6,6 @@ and UTC creation time. Exact repeated questions are served from this dataset
 and session memory without another Gemini or Tavily request.
 
 Streamlit Cloud storage is temporary and can be cleared when the app restarts.
-Use an external database or object store if responses must persist permanently.
+For persistent storage, run `supabase_schema.sql` in Supabase SQL Editor and
+configure `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. The app uses Supabase first
+and falls back to the local CSV when those variables are unavailable.
