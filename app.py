@@ -59,13 +59,13 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&display=swap');
 
     :root {
-        --ink: #17212b;
-        --muted: #687783;
-        --line: #dbe3e8;
-        --surface: #f7f9fa;
-        --panel: #ffffff;
-        --accent: #087f8c;
-        --accent-soft: #e3f4f3;
+        --ink: #f5f1fa;
+        --muted: #aaa1b5;
+        --line: rgba(255, 255, 255, 0.12);
+        --surface: #17121e;
+        --panel: #261c31;
+        --accent: #bf65f6;
+        --accent-soft: #38214b;
     }
 
     html, body, [class*="css"], .stApp {
@@ -74,7 +74,7 @@ st.markdown(
     }
 
     .stApp {
-        background: #f4f7f8;
+        background: #100d15;
     }
 
     [data-testid="stHeader"] {
@@ -82,19 +82,19 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] {
-        background: #eef3f4;
-        border-right: 1px solid var(--line);
+        background: #17131d;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     [data-testid="stSidebar"] > div:first-child {
-        padding: 2rem 1.35rem;
+        padding: 1.35rem 1rem;
     }
 
     .desk-mark {
         display: flex;
         align-items: center;
         gap: 0.7rem;
-        margin-bottom: 2.2rem;
+        margin-bottom: 1.1rem;
     }
 
     .desk-symbol {
@@ -103,13 +103,13 @@ st.markdown(
         height: 2rem;
         place-items: center;
         border-radius: 7px;
-        background: var(--ink);
-        color: #9fe3df;
+        background: #33273f;
+        color: #d4a5ff;
         font-size: 1.25rem;
     }
 
     .desk-name {
-        color: var(--ink);
+        color: #f4eff8;
         font-size: 0.9rem;
         font-weight: 700;
         letter-spacing: 0.02em;
@@ -117,7 +117,7 @@ st.markdown(
 
     .desk-kicker {
         margin-top: 0.15rem;
-        color: var(--muted);
+        color: #8f8798;
         font-size: 0.68rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -128,33 +128,34 @@ st.markdown(
         align-items: flex-start;
         justify-content: space-between;
         gap: 1rem;
-        border-bottom: 1px solid var(--line);
-        margin-bottom: 2.2rem;
-        padding-bottom: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(135deg, #32213e 0%, #1f172b 48%, #17121f 100%);
+        margin: 0 auto;
+        max-width: 930px;
+        padding: 1rem 1.4rem;
     }
 
     .main-head h1 {
         margin: 0;
-        color: var(--ink);
-        font-size: clamp(1.7rem, 3vw, 2.5rem);
-        font-weight: 650;
-        letter-spacing: -0.02em;
+        color: #f5f0fa;
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0;
     }
 
     .main-head p {
-        margin: 0.45rem 0 0;
-        color: var(--muted);
-        font-size: 0.9rem;
+        display: none;
     }
 
     .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 0.45rem;
-        border: 1px solid #b8dfdc;
+        border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 999px;
-        background: var(--accent-soft);
-        color: #17656b;
+        background: rgba(0, 0, 0, 0.28);
+        color: #d9cfe2;
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.05em;
@@ -167,13 +168,13 @@ st.markdown(
         width: 0.42rem;
         height: 0.42rem;
         border-radius: 50%;
-        background: #16a085;
+        background: #9b4de0;
     }
 
     [data-testid="stChatMessage"] {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        background: #251c30;
         margin-bottom: 0.8rem;
         padding: 1rem 1.1rem;
     }
@@ -183,11 +184,12 @@ st.markdown(
     }
 
     [data-testid="stChatInput"] {
-        border-color: #b9cbd0;
+        border-color: rgba(205, 128, 255, 0.55);
+        background: #21182a;
     }
 
     .sidebar-label {
-        color: var(--muted);
+        color: #877d91;
         font-size: 0.68rem;
         font-weight: 700;
         letter-spacing: 0.1em;
@@ -195,35 +197,114 @@ st.markdown(
     }
 
     .sidebar-rule {
-        border-top: 1px solid var(--line);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         margin: 1.25rem 0;
     }
 
     .tool-row {
         display: flex;
         justify-content: space-between;
-        border-bottom: 1px solid var(--line);
-        color: var(--ink);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e6dfea;
         font-size: 0.82rem;
         padding: 0.7rem 0;
     }
 
     .tool-row span:last-child {
-        color: var(--accent);
+        color: #c277f4;
         font-weight: 700;
     }
 
     .stButton > button {
-        border: 1px solid #b9cbd0;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 6px;
-        background: var(--panel);
-        color: var(--ink);
+        background: #2b2136;
+        color: #e9e1ee;
         font-weight: 600;
     }
 
     .stButton > button:hover {
-        border-color: var(--accent);
-        color: var(--accent);
+        border-color: #a65bda;
+        color: #d39af4;
+    }
+
+    .workspace {
+        max-width: 930px;
+        min-height: 76vh;
+        margin: 0 auto;
+        padding: 0 3.2rem 2rem;
+        background: radial-gradient(circle at 50% 18%, #392047 0%, #21182c 38%, #17121f 78%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 0;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .welcome {
+        padding: 6rem 0 2.4rem;
+        text-align: center;
+    }
+
+    .welcome-orb {
+        width: 4.1rem;
+        height: 4.1rem;
+        margin: 0 auto 1.4rem;
+        border: 1px solid #c77df6;
+        border-radius: 50%;
+        background: radial-gradient(circle at 32% 25%, #e8bbff, #8334a8 54%, #302367);
+        box-shadow: 0 0 26px rgba(183, 91, 241, 0.42);
+    }
+
+    .welcome h1 {
+        margin: 0;
+        color: #eee6f4;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 450;
+    }
+
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.55rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .quick-action {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+        background: rgba(25, 17, 32, 0.62);
+        color: #d9cfe1;
+        font-size: 0.76rem;
+        padding: 0.52rem 0.85rem;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.7rem;
+        margin-top: 1rem;
+    }
+
+    .feature-card {
+        min-height: 5rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        background: rgba(12, 9, 16, 0.3);
+        padding: 0.9rem;
+    }
+
+    .feature-card strong {
+        display: block;
+        color: #eee5f4;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .feature-card span {
+        display: block;
+        margin-top: 0.4rem;
+        color: #978b9e;
+        font-size: 0.72rem;
     }
     </style>
     """,
@@ -233,11 +314,24 @@ st.markdown(
 st.markdown(
     """
     <div class="main-head">
-        <div>
-            <h1>Research desk</h1>
-            <p>Search, weather intelligence, and grounded answers in one workspace.</p>
+        <div>◈ &nbsp; SIGNAL / AI</div>
+        <div class="status-pill"><span class="status-dot"></span>Online</div>
+    </div>
+    <div class="workspace">
+        <div class="welcome">
+            <div class="welcome-orb"></div>
+            <h1>Ready to create something new?</h1>
         </div>
-        <div class="status-pill"><span class="status-dot"></span>Systems ready</div>
+        <div class="quick-actions">
+            <span class="quick-action">Create image&nbsp; ◫</span>
+            <span class="quick-action">Brainstorm&nbsp; ◇</span>
+            <span class="quick-action">Make a plan&nbsp; ▱</span>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card"><strong>Web research</strong><span>Current answers with sources</span></div>
+            <div class="feature-card"><strong>Weather data</strong><span>Live conditions by city</span></div>
+            <div class="feature-card"><strong>AI assistant</strong><span>Fast, focused responses</span></div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -343,12 +437,15 @@ with st.sidebar:
                 <div class="desk-kicker">Research console</div>
             </div>
         </div>
-        <div class="sidebar-label">Session</div>
-        <div class="tool-row"><span>Conversation turns</span><span>{}</span></div>
+        <div class="sidebar-label">Workspace</div>
+        <div class="tool-row"><span>Active chat</span><span>{}</span></div>
+        <div class="tool-row"><span>Chat</span><span>›</span></div>
+        <div class="tool-row"><span>Archived</span><span>›</span></div>
+        <div class="tool-row"><span>Library</span><span>›</span></div>
         <div class="sidebar-rule"></div>
-        <div class="sidebar-label">Connected tools</div>
-        <div class="tool-row"><span>Web search</span><span>ON</span></div>
-        <div class="tool-row"><span>Weather data</span><span>ON</span></div>
+        <div class="sidebar-label">Projects</div>
+        <div class="tool-row"><span>New project</span><span>＋</span></div>
+        <div class="tool-row"><span>Weather research</span><span>›</span></div>
         """.format(len(st.session_state.get("messages", []))),
         unsafe_allow_html=True,
     )
@@ -360,9 +457,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-user_query = st.chat_input(
-    "Ask about the weather, news, or anything you want to research"
-)
+user_query = st.chat_input("Ask anything...")
 
 if user_query:
     st.session_state.messages.append({"role": "user", "content": user_query})
