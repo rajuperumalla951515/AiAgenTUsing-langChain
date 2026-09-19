@@ -1,4 +1,5 @@
 import os
+import csv
 import json
 import random
 from datetime import datetime, timezone
@@ -33,7 +34,7 @@ GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 WEATHERSTACK_API_KEY = get_secret("WEATHERSTACK_API_KEY")
 TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
 
-RESPONSE_DATASET = Path(__file__).parent / "data" / "agent_responses.jsonl"
+RESPONSE_DATASET = Path(__file__).parent / "data" / "agent_responses.csv"
 
 
 def normalize_query(query: str) -> str:
@@ -50,15 +51,13 @@ def get_saved_response(query: str) -> str | None:
         return None
 
     try:
-        records = RESPONSE_DATASET.read_text(encoding="utf-8").splitlines()
-        for record_text in reversed(records):
-            if not record_text.strip():
-                continue
-            record = json.loads(record_text)
+        with RESPONSE_DATASET.open("r", encoding="utf-8", newline="") as dataset_file:
+            records = list(csv.DictReader(dataset_file))
+        for record in reversed(records):
             if record.get("query_key") == query_key:
                 response_cache[query_key] = record["response"]
                 return record["response"]
-    except (OSError, json.JSONDecodeError, KeyError):
+    except (OSError, csv.Error, KeyError):
         return None
 
     return None
@@ -76,8 +75,12 @@ def save_response(query: str, response: str) -> None:
     }
     try:
         RESPONSE_DATASET.parent.mkdir(parents=True, exist_ok=True)
-        with RESPONSE_DATASET.open("a", encoding="utf-8") as dataset_file:
-            dataset_file.write(json.dumps(record, ensure_ascii=True) + "\n")
+        file_exists = RESPONSE_DATASET.exists()
+        with RESPONSE_DATASET.open("a", encoding="utf-8", newline="") as dataset_file:
+            writer = csv.DictWriter(dataset_file, fieldnames=record.keys())
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(record)
     except OSError:
         # The response remains available in session memory if the host is read-only.
         pass
