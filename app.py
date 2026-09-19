@@ -1,5 +1,6 @@
 import os
 import json
+import random
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -359,6 +360,41 @@ st.markdown(
         color: #978b9e;
         font-size: 0.72rem;
     }
+
+    .app-greeting {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        max-width: 930px;
+        margin: 0 auto 1.25rem;
+        padding: 0 0.2rem;
+    }
+
+    .main-logo {
+        display: grid;
+        width: 2.6rem;
+        height: 2.6rem;
+        flex: 0 0 2.6rem;
+        place-items: center;
+        border: 1px solid rgba(210, 143, 255, 0.6);
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 25%, #e8bdff, #8135a9 55%, #30215b);
+        box-shadow: 0 0 20px rgba(183, 91, 241, 0.35);
+        color: #fff;
+        font-size: 1.25rem;
+    }
+
+    .greeting-text {
+        color: #f3edf7;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .greeting-subtext {
+        margin-top: 0.18rem;
+        color: #918699;
+        font-size: 0.76rem;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -432,6 +468,30 @@ agent_executor = get_agent_executor()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "greeting" not in st.session_state:
+    st.session_state.greeting = random.choice(
+        [
+            "Hello buddy, how are you?",
+            "Hey there, what are we exploring today?",
+            "Good to see you. What can I help with?",
+            "Welcome back. Ready when you are.",
+            "Hi there. What is on your mind?",
+        ]
+    )
+
+st.markdown(
+    f"""
+    <div class="app-greeting">
+        <div class="main-logo">◈</div>
+        <div>
+            <div class="greeting-text">{st.session_state.greeting}</div>
+            <div class="greeting-subtext">Your AI research assistant is ready.</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 with st.sidebar:
     st.markdown(
         """
@@ -487,7 +547,7 @@ if user_query:
                 st.caption("Saved response")
                 st.markdown(answer)
             else:
-                with st.spinner("Researching..."):
+                with st.spinner("Agent is thinking..."):
                     try:
                         response = agent_executor.invoke({"input": agent_input})
                         answer = response["output"]
