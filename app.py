@@ -315,7 +315,7 @@ st.markdown(
 # SEARCH TOOL
 # ==========================================
 
-search_tool = TavilySearchResults(max_results=2)
+search_tool = TavilySearchResults(max_results=1)
 
 # ==========================================
 # WEATHER TOOL
@@ -348,51 +348,29 @@ def get_weather_data(city: str) -> str:
     )
 
 
-# ==========================================
-# LLM
-# ==========================================
+@st.cache_resource(show_spinner=False)
+def get_agent_executor():
+    """Build the agent once instead of rebuilding it on every chat rerun."""
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0,
+        google_api_key=GOOGLE_API_KEY,
+        max_retries=2,
+    )
+    prompt = hub.pull("hwchase17/react")
+    tools = [search_tool, get_weather_data]
+    agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
+    return AgentExecutor(
+        agent=agent,
+        tools=tools,
+        verbose=False,
+        handle_parsing_errors=True,
+        max_iterations=4,
+        max_execution_time=45,
+    )
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0,
-    google_api_key=GOOGLE_API_KEY
-)
 
-# ==========================================
-# PROMPT
-# ==========================================
-
-prompt = hub.pull("hwchase17/react")
-
-# ==========================================
-# TOOLS
-# ==========================================
-
-tools = [
-    search_tool,
-    get_weather_data
-]
-
-# ==========================================
-# CREATE AGENT
-# ==========================================
-
-agent = create_react_agent(
-    llm=llm,
-    tools=tools,
-    prompt=prompt
-)
-
-# ==========================================
-# EXECUTOR
-# ==========================================
-
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    verbose=True,
-    handle_parsing_errors=True
-)
+agent_executor = get_agent_executor()
 
 # ==========================================
 # CHAT INTERFACE
