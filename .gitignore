@@ -1,3 +1,5 @@
 .env
 research/.env
 data/agent_responses.csv
+__pycache__/
+*.py[cod]

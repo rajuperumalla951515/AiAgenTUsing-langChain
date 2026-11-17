@@ -1,25 +1,15 @@
 import os
 import csv
-import json
 import random
 from datetime import datetime, timezone
 from pathlib import Path
 
-import requests
 import streamlit as st
 import certifi
 from dotenv import load_dotenv
 from supabase import Client, create_client
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.tools import tool
-from langchain.agents import (
-    create_react_agent,
-    AgentExecutor
-)
-from langchain import hub
-
-from langchain_community.tools.tavily_search import TavilySearchResults
+from search_weather_agent import build_agent_executor
 
 # ==========================================
 # LOAD ENV VARIABLES
@@ -38,6 +28,14 @@ SUPABASE_URL = get_secret("SUPABASE_URL")
 SUPABASE_SECRET_KEY = get_secret("SUPABASE_SECRET_KEY")
 
 RESPONSE_DATASET = Path(__file__).parent / "data" / "agent_responses.csv"
+
+for secret_name, secret_value in {
+    "GOOGLE_API_KEY": GOOGLE_API_KEY,
+    "TAVILY_API_KEY": TAVILY_API_KEY,
+    "WEATHERSTACK_API_KEY": WEATHERSTACK_API_KEY,
+}.items():
+    if secret_value:
+        os.environ.setdefault(secret_name, secret_value)
 
 
 def normalize_query(query: str) -> str:
@@ -442,62 +440,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ==========================================
-# SEARCH TOOL
-# ==========================================
-
-search_tool = TavilySearchResults(max_results=1)
-
-# ==========================================
-# WEATHER TOOL
-# ==========================================
-
-@tool
-def get_weather_data(city: str) -> str:
-    """
-    Fetch current weather information for a city.
-    """
-
-    url = (
-        f"https://api.weatherstack.com/current?"
-        f"access_key={WEATHERSTACK_API_KEY}&query={city}"
-    )
-
-    response = requests.get(url, timeout=15)
-    response.raise_for_status()
-
-    data = response.json()
-
-    if "current" not in data:
-        return f"Could not fetch weather data for {city}"
-
-    return (
-        f"City: {city}\n"
-        f"Temperature: {data['current']['temperature']}°C\n"
-        f"Weather: {data['current']['weather_descriptions'][0]}\n"
-        f"Humidity: {data['current']['humidity']}%"
-    )
-
-
 @st.cache_resource(show_spinner=False)
 def get_agent_executor():
     """Build the agent once instead of rebuilding it on every chat rerun."""
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.6-flash",
-        temperature=0,
+    return build_agent_executor(
         google_api_key=GOOGLE_API_KEY,
-        max_retries=2,
-    )
-    prompt = hub.pull("hwchase17/react")
-    tools = [search_tool, get_weather_data]
-    agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
-    return AgentExecutor(
-        agent=agent,
-        tools=tools,
-        verbose=False,
-        handle_parsing_errors=True,
-        max_iterations=4,
-        max_execution_time=45,
+        tavily_api_key=TAVILY_API_KEY,
+        weatherstack_api_key=WEATHERSTACK_API_KEY,
     )
 
 
